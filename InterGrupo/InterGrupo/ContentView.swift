@@ -160,11 +160,8 @@ struct Login: View {
                 
                 Button(action: {
                         
-                
-                    
                     validationLogin()
                         
-                    
                     }) {
                         LoginButtonContent()
                     }
@@ -181,10 +178,8 @@ struct Login: View {
     func validationLogin(){
         if(username == username1){
             print("Usuario Registrado")
-            NavigationLink(destination: Home()) {
-                            Text("View 2")
-                                .font(.headline)
-                        }
+           
+                        
         }else{
             print("Usuario NO Registrado")
         }
@@ -234,13 +229,14 @@ struct Home : View {
     @ObservedObject var obs = observer()
     @State private var searchText : String = ""
     
-    let countrys = observer().getListPaises()
+    var countrys = observer().getListPaises()
     
     let countrys2 = ["Subaru WRX", "Tesla Model 3", "Porsche 911", "Renault Zoe", "DeLorean", "Mitsubishi Lancer", "Audi RS6"]
     
 
     init() {
         self.presentationMode.wrappedValue.dismiss()
+       
     }
     
     
@@ -249,12 +245,53 @@ struct Home : View {
         NavigationView{
             VStack{
       
-                SearchBar(text: $searchText, placeholder: "Search Country" )
-             
-                List(obs.datas){ i in
-                    card(name: i.id, capital: i.capital, region: i.region, latitude: i.latitude, longitude: i.longitude)
-                }.navigationBarTitle(Text("Lista Paises"))
                 
+                //SearchBar(text: $searchText, placeholder: "Search Country" )
+                
+                
+                
+                
+                /*
+                
+                List{
+                                TextField("Type your search",text: $searchText)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+
+                    ForEach(countrys.filter{$0.hasPrefix(searchText) || searchText == ""}, id:\.self){searchText in
+                                    Text(searchText)
+                                }
+                            }
+                            .navigationBarTitle(Text("Search"))
+ 
+                */
+                
+                    
+                
+                
+                List{
+                                TextField("Type your search",text: $searchText)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+
+                    ForEach(obs.getListPaises().filter{$0.hasPrefix(searchText) || searchText == ""}, id:\.self){searchText in
+                                    //Text(searchText)
+                                    //Text(obs.getCapita(pais: searchText))
+                        
+                        card(name: searchText, capital: obs.getCapita(pais: searchText), region: obs.getRegion(pais: searchText), latitude: 0.0, longitude: 0.0)
+                        
+                                }
+                            }
+                            .navigationBarTitle(Text("Search"))
+                
+                
+             
+                
+                /*
+                List(obs.datas){ i in
+                    
+                    card(name: i.id, capital: i.capital, region: i.region, latitude: i.latitude, longitude: i.longitude)
+                    
+                }.navigationBarTitle(Text("Lista Paises"))
+                */
                 
                 
                 /*
@@ -313,8 +350,8 @@ class observer: ObservableObject {
             }
             
             
-            for name in getListPaises() {
-               // print("Hello, \(name)!")
+            for name in getListaObjeto() {
+                print("Hello, \(name.id)!")
             }
             
             
@@ -324,9 +361,39 @@ class observer: ObservableObject {
     }
     
     
+    
+    func getListaObjeto() -> Array<dataType>{
+        return datas
+    
+    }
+    
    
     func getListPaises() -> Array<String>{
         return lstPaises
+    }
+    
+    
+    func getCapita(pais: String) -> String {
+        var capital = ""
+        for name in getListaObjeto() {
+            
+            if(pais == name.id){
+                capital = name.capital
+            }
+        }
+        return capital
+    }
+    
+    
+    func getRegion(pais: String) -> String {
+        var region = ""
+        for name in getListaObjeto() {
+            
+            if(pais == name.id){
+                region = name.region
+            }
+        }
+        return region
     }
     
 }
@@ -350,6 +417,7 @@ struct card : View {
     var latitude = 0.0
     var longitude = 0.0
 
+    
     var body: some View{
         
         HStack{
@@ -358,6 +426,7 @@ struct card : View {
                 .frame(width: 60, height: 60)
                 .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/).shadow(radius: 20)
             */
+            
             
             
             
