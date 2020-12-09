@@ -48,63 +48,7 @@ struct ContentView: View {
             }
         }
     }
-    
-    
-    /*
-    @ObservedObject var obs = observer()
-    @State private var searchText : String = ""
-    
-    let countrys = observer().getListPaises()
-    
-    let countrys2 = ["Subaru WRX", "Tesla Model 3", "Porsche 911", "Renault Zoe", "DeLorean", "Mitsubishi Lancer", "Audi RS6"]
-    
-    
-    
-    
-    var body: some View {
-        
-        NavigationView{
-            VStack{
-      
-                SearchBar(text: $searchText, placeholder: "Search Country" )
-             
-                List(obs.datas){ i in
-                    card(name: i.id, capital: i.capital, region: i.region, latitude: i.latitude, longitude: i.longitude)
-                }.navigationBarTitle(Text("Lista Paises"))
-                
-                
-                
-                /*
-                List {
-            
-                    ForEach(observer().getListPaises().filter {
-                        
-                        self.searchText.isEmpty ? true : $0.lowercased().contains(self.searchText.lowercased())
-                        
-                    }, id: \.self) { pais in
-                        
-                        Text(pais)
-                        
-                    }
-            
-                    //card(name: i.id, capital: i.capital, region: i.region)
-                    
-                }.navigationBarTitle(Text("Cars"))
-                 */
-                
-                
-                
-            }
-        }
-    }
- 
-     */
 }
-
-
-
-
-
 
 
 
@@ -130,15 +74,11 @@ struct Login: View {
     
     var body: some View {
         
-        
-        
         NavigationView {
             VStack {
                 WelcomeText()
                 UserImage()
-                
-                
-                
+
                 TextField("Username", text: $username)
                         .padding()
                     .background(Color.gray)
@@ -229,11 +169,7 @@ struct Home : View {
     @ObservedObject var obs = observer()
     @State private var searchText : String = ""
     
-    var countrys = observer().getListPaises()
-    
-    let countrys2 = ["Subaru WRX", "Tesla Model 3", "Porsche 911", "Renault Zoe", "DeLorean", "Mitsubishi Lancer", "Audi RS6"]
-    
-
+ 
     init() {
         self.presentationMode.wrappedValue.dismiss()
        
@@ -244,76 +180,16 @@ struct Home : View {
         
         NavigationView{
             VStack{
-      
-                
-                //SearchBar(text: $searchText, placeholder: "Search Country" )
-                
-                
-                
-                
-                /*
-                
                 List{
-                                TextField("Type your search",text: $searchText)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-
-                    ForEach(countrys.filter{$0.hasPrefix(searchText) || searchText == ""}, id:\.self){searchText in
-                                    Text(searchText)
-                                }
-                            }
-                            .navigationBarTitle(Text("Search"))
- 
-                */
-                
-                    
-                
-                
-                List{
-                                TextField("Type your search",text: $searchText)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    TextField("Type your search",text: $searchText).textFieldStyle(RoundedBorderTextFieldStyle())
 
                     ForEach(obs.getListPaises().filter{$0.hasPrefix(searchText) || searchText == ""}, id:\.self){searchText in
-                                    //Text(searchText)
-                                    //Text(obs.getCapita(pais: searchText))
+                                   
+                        card(name: searchText, capital: obs.getCapita(pais: searchText), region: obs.getRegion(pais: searchText), latitude: obs.getLatitud(pais: searchText), longitude: obs.getLongitud(pais: searchText))
                         
-                        card(name: searchText, capital: obs.getCapita(pais: searchText), region: obs.getRegion(pais: searchText), latitude: 0.0, longitude: 0.0)
-                        
-                                }
-                            }
-                            .navigationBarTitle(Text("Search"))
-                
-                
-             
-                
-                /*
-                List(obs.datas){ i in
-                    
-                    card(name: i.id, capital: i.capital, region: i.region, latitude: i.latitude, longitude: i.longitude)
-                    
-                }.navigationBarTitle(Text("Lista Paises"))
-                */
-                
-                
-                /*
-                List {
-            
-                    ForEach(observer().getListPaises().filter {
-                        
-                        self.searchText.isEmpty ? true : $0.lowercased().contains(self.searchText.lowercased())
-                        
-                    }, id: \.self) { pais in
-                        
-                        Text(pais)
-                        
+                        }
                     }
-            
-                    //card(name: i.id, capital: i.capital, region: i.region)
-                    
-                }.navigationBarTitle(Text("Cars"))
-                 */
-                
-                
-                
+                    .navigationBarTitle(Text("Search"))
             }
         }
     }
@@ -338,25 +214,10 @@ class observer: ObservableObject {
             let json = try! JSON(data: data.data!)
                  
             for i in json{
-               
-                //lstPaises[j] = i.1["name"].stringValue
-                
                 lstPaises.append(i.1["name"].stringValue)
-                
-                
-                self.datas.append(dataType(id: i.1["name"].stringValue, capital: i.1["capital"].stringValue, region: i.1["region"].stringValue, latitude: i.1["latlng"][0].doubleValue, longitude: i.1["latlng"][1].doubleValue ))
-                
 
+                self.datas.append(dataType(id: i.1["name"].stringValue, capital: i.1["capital"].stringValue, region: i.1["region"].stringValue, latitude: i.1["latlng"][0].doubleValue, longitude: i.1["latlng"][1].doubleValue ))
             }
-            
-            
-            for name in getListaObjeto() {
-                print("Hello, \(name.id)!")
-            }
-            
-            
-            
-            
         }
     }
     
@@ -376,7 +237,6 @@ class observer: ObservableObject {
     func getCapita(pais: String) -> String {
         var capital = ""
         for name in getListaObjeto() {
-            
             if(pais == name.id){
                 capital = name.capital
             }
@@ -388,12 +248,31 @@ class observer: ObservableObject {
     func getRegion(pais: String) -> String {
         var region = ""
         for name in getListaObjeto() {
-            
             if(pais == name.id){
                 region = name.region
             }
         }
         return region
+    }
+    
+    func getLatitud(pais: String) -> Double {
+        var latitud = 0.0
+        for name in getListaObjeto() {
+            if(pais == name.id){
+                latitud = name.latitude
+            }
+        }
+        return latitud
+    }
+    
+    func getLongitud(pais: String) -> Double {
+        var longitud = 0.0
+        for name in getListaObjeto() {
+            if(pais == name.id){
+                longitud = name.longitude
+            }
+        }
+        return longitud
     }
     
 }
